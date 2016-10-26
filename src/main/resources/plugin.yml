@@ -1,0 +1,4 @@
+name: BasePluginLib
+main: net.andrewcr.minecraft.plugin.BasePluginLib.Plugin
+version: 1.0
+authors: [ andrewcr ]
