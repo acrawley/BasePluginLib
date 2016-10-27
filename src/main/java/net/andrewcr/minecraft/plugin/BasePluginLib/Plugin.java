@@ -1,10 +1,6 @@
 package net.andrewcr.minecraft.plugin.BasePluginLib;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.andrewcr.minecraft.plugin.BasePluginLib.plugin.PluginBase;
 
-public class Plugin extends JavaPlugin {
-    @Override
-    public void onEnable() {
-        this.getLogger().info("Loaded BasePluginLib!");
-    }
+public class Plugin extends PluginBase {
 }
