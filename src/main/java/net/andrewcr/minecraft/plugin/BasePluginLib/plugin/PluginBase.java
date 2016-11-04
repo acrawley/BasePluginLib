@@ -1,6 +1,8 @@
 package net.andrewcr.minecraft.plugin.BasePluginLib.plugin;
 
 import net.andrewcr.minecraft.plugin.BasePluginLib.command.ICommand;
+import net.andrewcr.minecraft.plugin.BasePluginLib.util.PluginUtil;
+import net.andrewcr.minecraft.plugin.BasePluginLib.util.Version;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -9,22 +11,45 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PluginBase extends JavaPlugin {
+public abstract class PluginBase extends JavaPlugin {
     //region Private Fields
 
     private Map<String, ICommand> commandMap;
+    private boolean enabled;
 
     //endregion
 
     @Override
-    public void onEnable() {
+    public final void onEnable() {
         super.onEnable();
 
+        if (!PluginUtil.ensureBPLVersion(this.getRequiredBPLVersion())) {
+            this.getLogger().severe("Installed BasePluginLib version '" + PluginUtil.getBPLVersion()
+                + "' is older than required version '" + this.getRequiredBPLVersion() + "'!");
+            this.getPluginLoader().disablePlugin(this);
+
+            return;
+        }
+
         this.commandMap = new HashMap<>();
+        this.enabled = true;
+
+        this.onEnableCore();
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void onDisable() {
+        super.onDisable();
+
+        if (this.enabled) {
+            this.enabled = false;
+
+            this.onDisableCore();
+        }
+    }
+
+    @Override
+    public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String cmdName = command.getName().toLowerCase();
 
         ICommand cmd = this.commandMap.get(cmdName);
@@ -43,6 +68,12 @@ public class PluginBase extends JavaPlugin {
     protected void registerListener(Listener listener) {
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
+
+    protected abstract Version getRequiredBPLVersion();
+
+    protected void onEnableCore() { };
+
+    protected void onDisableCore() { };
 
 }
 
