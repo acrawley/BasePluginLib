@@ -22,7 +22,7 @@ public class StringUtil {
             return true;
         }
 
-        if (a == null || b == null ) {
+        if (a == null || b == null) {
             return false;
         }
 

@@ -27,17 +27,6 @@ public class Version {
         this.revision = revision;
     }
 
-    public boolean isOlderThan(Version other) {
-        if (this.major < other.major ||
-            this.minor < other.minor ||
-            (this.build != -1 && other.build != -1 && this.build < other.build) ||
-            (this.revision != -1 && other.revision != -1 && this.revision < other.revision)) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static Version tryParse(String text) {
         String[] parts = text.split("\\.");
         if (parts.length < 2 || parts.length > 4) {
@@ -64,15 +53,23 @@ public class Version {
         }
     }
 
+    public boolean isOlderThan(Version other) {
+        return this.major < other.major ||
+            this.minor < other.minor ||
+            (this.build != -1 && other.build != -1 && this.build < other.build) ||
+            (this.revision != -1 && other.revision != -1 && this.revision < other.revision);
+
+    }
+
     @Override
     public String toString() {
         if (major == -1) {
             return super.toString();
         }
 
-        return Arrays.stream(new int[] { this.major, this.minor, this.build, this.revision })
+        return Arrays.stream(new int[]{this.major, this.minor, this.build, this.revision})
             .filter(i -> i != -1)
-            .mapToObj(i -> Integer.toString(i))
+            .mapToObj(Integer::toString)
             .collect(Collectors.joining("."));
     }
 }

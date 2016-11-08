@@ -38,7 +38,7 @@ public abstract class PluginBase extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public final void onDisable() {
         super.onDisable();
 
         if (this.enabled) {
@@ -71,9 +71,11 @@ public abstract class PluginBase extends JavaPlugin {
 
     protected abstract Version getRequiredBPLVersion();
 
-    protected void onEnableCore() { };
+    protected void onEnableCore() {
+    }
 
-    protected void onDisableCore() { };
+    protected void onDisableCore() {
+    }
 
 }
 

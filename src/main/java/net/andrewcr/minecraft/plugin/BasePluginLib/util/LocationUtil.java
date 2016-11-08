@@ -1,12 +1,29 @@
 package net.andrewcr.minecraft.plugin.BasePluginLib.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LocationUtil {
+    private static final String THETA_SYMBOL = "θ";
+    private static final String PHI_SYMBOL = "φ";
+    private static final String DECIMAL_EXPR = "-?\\d+(?:\\.\\d+)?";
+    private static final String LOCATION_EXPR =
+        "(?:(?<world>.+?)\\s*@\\s*)?" +         // Match optional world
+            "(?<x>" + DECIMAL_EXPR + "),\\s*" + // Match X coordinate
+            "(?<y>" + DECIMAL_EXPR + "),\\s*" + // Match Y coordinate
+            "(?<z>" + DECIMAL_EXPR + ")" +      // Match Z coordinate
+            "(?:,\\s*" + THETA_SYMBOL + "\\s*=\\s*(?<yaw>" + DECIMAL_EXPR + "))?" + // Match optional yaw
+            "(?:,\\s*" + PHI_SYMBOL + "\\s*=\\s*(?<pitch>" + DECIMAL_EXPR + "))?";  // Match optional pitch
+
+    private static final Pattern LOCATION_REGEX = Pattern.compile(LOCATION_EXPR);
+
     public static float getSignAngle(Sign sign) {
         BlockFace face = ((org.bukkit.material.Sign) sign.getData()).getFacing();
         return LocationUtil.blockFaceToYaw(face);
@@ -58,8 +75,10 @@ public class LocationUtil {
             startLocation.getBlockY(),
             startLocation.getBlockZ());
 
-        location.setYaw(startLocation.getYaw());
-        location.setPitch(startLocation.getPitch());
+        if (location != null) {
+            location.setYaw(startLocation.getYaw());
+            location.setPitch(startLocation.getPitch());
+        }
 
         return location;
     }
@@ -95,5 +114,46 @@ public class LocationUtil {
         return null;
     }
 
+    public static Location locationFromString(String text) {
+        try {
+            Matcher twoProblems = LOCATION_REGEX.matcher(text);
+            if (!twoProblems.matches()) {
+                // Invalid format
+                return null;
+            }
 
+            return new Location(
+                twoProblems.group("world") != null ? Bukkit.getWorld(twoProblems.group("world")) : null,
+                Double.parseDouble(twoProblems.group("x")),
+                Double.parseDouble(twoProblems.group("y")),
+                Double.parseDouble(twoProblems.group("z")),
+                twoProblems.group("pitch") != null ? Double.valueOf(twoProblems.group("pitch")).floatValue() : 0,
+                twoProblems.group("yaw") != null ? Double.valueOf(twoProblems.group("yaw")).floatValue() : 0
+            );
+        } catch (NumberFormatException ex) {
+            // Invalid format
+            return null;
+        }
+    }
+
+    public static String locationToIntString(Location location, boolean includeWorld, boolean includeYaw, boolean includePitch) {
+        return (includeWorld ? (location.getWorld().getName() + " @ ") : "")
+            + location.getBlockX() + ", "
+            + location.getBlockY() + ", "
+            + location.getBlockZ()
+            + LocationUtil.getYawPitchSuffix(location, includeYaw, includePitch);
+    }
+
+    public static String locationToDecimalString(Location location, boolean includeWorld, boolean includeYaw, boolean includePitch) {
+        return (includeWorld ? (location.getWorld().getName() + " @ ") : "")
+            + location.getX() + ", "
+            + location.getY() + ", "
+            + location.getZ()
+            + LocationUtil.getYawPitchSuffix(location, includeYaw, includePitch);
+    }
+
+    private static String getYawPitchSuffix(Location location, boolean includeYaw, boolean includePitch) {
+        return (includeYaw && location.getYaw() != 0 ? (", " + THETA_SYMBOL + " = " + location.getYaw()) : "")
+            + (includePitch && location.getPitch() != 0 ? (", " + PHI_SYMBOL + " = " + location.getPitch()) : "");
+    }
 }

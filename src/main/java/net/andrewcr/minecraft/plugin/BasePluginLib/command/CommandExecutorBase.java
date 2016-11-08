@@ -12,10 +12,10 @@ import java.util.Locale;
 public abstract class CommandExecutorBase {
     //region Private Fields
 
-    private CommandSender sender;
-    private String[] args;
     private final String name;
     private final String permission;
+    private CommandSender sender;
+    private String[] args;
     private Plugin plugin;
 
     //endregion
@@ -75,9 +75,16 @@ public abstract class CommandExecutorBase {
         this.sendMessage(ChatColor.RED + text);
     }
 
+    protected boolean hasPermission(String permission) {
+        // Assume that someone at the console has permission to do whatever they want
+        return (this.getPlayer() == null || this.getPlayer().hasPermission(permission));
+    }
+
     //endregion
 
-    public String getName() { return this.name; }
+    public String getName() {
+        return this.name;
+    }
 
     public boolean invoke() {
         // Check if allowed from console

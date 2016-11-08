@@ -5,5 +5,6 @@ import org.bukkit.plugin.Plugin;
 
 public interface ICommand {
     String getCommandName();
+
     boolean invoke(Plugin plugin, CommandSender sender, String[] args);
 }
