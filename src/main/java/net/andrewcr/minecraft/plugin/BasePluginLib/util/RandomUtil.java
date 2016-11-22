@@ -7,6 +7,10 @@ public class RandomUtil {
         return (int) (Math.random() * lessThan);
     }
 
+    public static int getRandomInt(int lowerBound, int upperBound) {
+        return lowerBound + RandomUtil.getRandomInt(upperBound - lowerBound);
+    }
+
     public static <T> T getRandomElement(List<T> list) {
         return list.get(RandomUtil.getRandomInt(list.size()));
     }

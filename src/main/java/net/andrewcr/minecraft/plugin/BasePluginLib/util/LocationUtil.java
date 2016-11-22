@@ -116,6 +116,10 @@ public class LocationUtil {
 
     public static Location locationFromString(String text) {
         try {
+            if (StringUtil.isNullOrEmpty(text)) {
+                return null;
+            }
+
             Matcher twoProblems = LOCATION_REGEX.matcher(text);
             if (!twoProblems.matches()) {
                 // Invalid format

@@ -7,10 +7,10 @@
     <groupId>net.andrewcr.minecraft.plugin</groupId>
     <artifactId>BasePluginLib</artifactId>
     <packaging>jar</packaging>
-    <version>1.2</version>
+    <version>1.3</version>
 
     <properties>
-        <bukkit.version>1.10.2-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.11-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <repositories>
